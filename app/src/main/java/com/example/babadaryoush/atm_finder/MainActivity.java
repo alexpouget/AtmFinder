@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -31,11 +33,40 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
     }
 
+    private String[] mNavigationDrawerItemTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    Toolbar toolbar;
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+    android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        /***************DRAWER****************/
+        mTitle = mDrawerTitle = getTitle();
+        mNavigationDrawerItemTitles= getResources().getStringArray(R.array.navigation_drawer_items_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
+        setupToolbar();
+
+        Drawer_DataModel[] drawerItem = new Drawer_DataModel[3];
+
+        drawerItem[0] = new Drawer_DataModel(/*R.drawable.connect,*/ "Mes ATM les plus proches"); //en commentaire l'argument pour ajouter un icone
+        drawerItem[1] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Paramètres"); //le décommenter dans Drawer_DataModel aussi
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
+/*      ***A décommenter et créer la classe DawerItemCustomAdapter***
+        DrawerItemCustomAdapter adapter = new DrawerItemCustomAdapter(this, R.layout.list_view_item_row, drawerItem);
+        mDrawerList.setAdapter(adapter);
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        setupDrawerToggle();*/
+        /****************DRAWER END***********/
         Map_fragment tah = null;
 
         tah = new Map_fragment();
@@ -63,5 +94,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 */
+    }
+    void setupToolbar(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 }
