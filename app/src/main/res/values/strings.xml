@@ -5,6 +5,7 @@
     <string name="mon_texte">drawer</string>
     <string-array name="navigation_drawer_items_array">
         <item>Mes ATM les plus proches</item>
+        <item>Recherche</item>
         <item>Paramètres</item>
     </string-array>
 </resources>

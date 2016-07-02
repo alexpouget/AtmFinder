@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /***************DRAWER****************/
+
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -55,19 +55,21 @@ public class MainActivity extends AppCompatActivity {
 
         setupToolbar();
 
-        Drawer_DataModel[] drawerItem = new Drawer_DataModel[2];
+        //si on veut + de menu dans le drawer augmenter le chiffre ci dessous
+        Drawer_DataModel[] drawerItem = new Drawer_DataModel[3];
 
         drawerItem[0] = new Drawer_DataModel(/*R.drawable.connect,*/ "Mes ATM les plus proches"); //en commentaire l'argument pour ajouter un icone
-        drawerItem[1] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Paramètres"); //le décommenter dans Drawer_DataModel aussi
+        drawerItem[1] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Rechercher"); //le décommenter dans Drawer_DataModel aussi
+        drawerItem[2] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Paramètres"); //le décommenter dans Drawer_DataModel aussi
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
-/*      ***A décommenter et créer la classe DawerItemCustomAdapter****/
+
         Drawer_ItemCustom adapter = new Drawer_ItemCustom(this, R.layout.drawer_listviewitem, drawerItem);
         mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        //setupDrawerToggle();
+        setupDrawerToggle();
 
         Map_fragment tah = null;
 
@@ -81,30 +83,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-/*        Button button = (Button) findViewById(R.id.sex);
-        button.setOnClickListener(new View.OnClickListener() {
-            Map_fragment tah = null;
-            @Override
-            public void onClick(View v) {
-                 tah = new Map_fragment();
-
-                if (tah != null) {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, tah).commit();
-                } else {
-                    Log.e("MainActivity", "Error in creating fragment");
-                }
-            }
-        });
-*/
-
     void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
+    //pour affciher l'icone de de déploiement du drawer (bouton sur lequel on clique pour déplier le drawer)
+    void setupDrawerToggle(){
+        mDrawerToggle = new android.support.v7.app.ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
+        mDrawerToggle.syncState();
+    }
 
+//onclick d'un des menus du drawer
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
         @Override
@@ -118,13 +109,13 @@ public class MainActivity extends AppCompatActivity {
 
             switch (position) {
                 case 0:
-                    //fragment = new ConnectFragment();
+                    fragment = new BankList_fragment();
                     break;
                 case 1:
-                    //fragment = new FixturesFragment();
+                    fragment = new Search_fragment();
                     break;
                 case 2:
-                    //fragment = new TableFragment();
+                    fragment = new Parametre_fragment();
                     break;
 
                 default:

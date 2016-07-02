@@ -27,6 +27,10 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.map_layout, container, false);
+        //Problème pour mettre à jour la position sur la map
+        //Ca marche lorsqu'on le fait dans le mainActivity mais je l'ai fait ici pour que ce soit + propre
+        //malheureusement ça ne fonctionne pas RECHERCHES EN COURS
+
         /*SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapView = (MapView) rootView.findViewById(R.id.map);
         mapView.getMapAsync(this);*/
