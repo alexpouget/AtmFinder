@@ -56,11 +56,12 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
 
         //si on veut + de menu dans le drawer augmenter le chiffre ci dessous
-        Drawer_DataModel[] drawerItem = new Drawer_DataModel[3];
+        Drawer_DataModel[] drawerItem = new Drawer_DataModel[4];
 
-        drawerItem[0] = new Drawer_DataModel(/*R.drawable.connect,*/ "Mes ATM les plus proches"); //en commentaire l'argument pour ajouter un icone
-        drawerItem[1] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Rechercher"); //le décommenter dans Drawer_DataModel aussi
-        drawerItem[2] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Paramètres"); //le décommenter dans Drawer_DataModel aussi
+        drawerItem[0] = new Drawer_DataModel(/*R.drawable.connect,*/ "Accueil"); //en commentaire l'argument pour ajouter un icone
+        drawerItem[1] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Mes ATM les plus proches"); //le décommenter dans Drawer_DataModel aussi
+        drawerItem[2] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Rechercher"); //le décommenter dans Drawer_DataModel aussi
+        drawerItem[3] = new Drawer_DataModel(/*R.drawable.fixtures,*/ "Paramètres"); //le décommenter dans Drawer_DataModel aussi
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -109,12 +110,15 @@ public class MainActivity extends AppCompatActivity {
 
             switch (position) {
                 case 0:
-                    fragment = new BankList_fragment();
+                    fragment = new Map_fragment();
                     break;
                 case 1:
-                    fragment = new Search_fragment();
+                    fragment = new BankList_fragment();
                     break;
                 case 2:
+                    fragment = new Search_fragment();
+                    break;
+                case 3:
                     fragment = new Parametre_fragment();
                     break;
 

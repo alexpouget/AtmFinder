@@ -4,6 +4,7 @@
     <string name="sex">Sisi Alk</string>
     <string name="mon_texte">drawer</string>
     <string-array name="navigation_drawer_items_array">
+        <item>Accueil</item>
         <item>Mes ATM les plus proches</item>
         <item>Recherche</item>
         <item>Paramètres</item>
