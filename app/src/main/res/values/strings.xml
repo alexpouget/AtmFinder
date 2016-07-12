@@ -9,4 +9,15 @@
         <item>Recherche</item>
         <item>Paramètres</item>
     </string-array>
+    <string-array name="banks">
+        <item>bank1</item>
+        <item>bank2</item>
+        <item>bank3</item>
+        <item>bank4</item>
+        <item>bank5</item>
+        <item>bank6</item>
+        <item>bank7</item>
+        <item>bank8</item>
+        <item>bank9</item>
+    </string-array>
 </resources>
