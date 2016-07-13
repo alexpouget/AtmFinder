@@ -1,6 +1,7 @@
 package com.example.babadaryoush.atm_finder;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -27,22 +29,21 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.map_layout, container, false);
-        //Problème pour mettre à jour la position sur la map
-        //Ca marche lorsqu'on le fait dans le mainActivity mais je l'ai fait ici pour que ce soit + propre
-        //malheureusement ça ne fonctionne pas RECHERCHES EN COURS
-
-        /*SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapView = (MapView) rootView.findViewById(R.id.map);
-        mapView.getMapAsync(this);*/
-
         return rootView;
     }
 
     @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        SupportMapFragment mf = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.maps);
+        mf.getMapAsync(this);
+    }
+
+    @Override
     public void onMapReady(GoogleMap map) {
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
-        map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        //Faire une liste des banque la parcourir et en faire des marqueurs
+        LatLng location = new LatLng(48.55, 3);
+        map.addMarker(new MarkerOptions().position(location).title("Chez Michax la tchoin"));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
     }
 }

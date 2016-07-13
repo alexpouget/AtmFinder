@@ -53,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Bank BNPNangis = new Bank("BNP Nangis",49,3);
+        Bank CLNangis = new Bank("Credit Lyonnais Nangis",49,3);
+        Bank SGPNangis = new Bank("Société Générale Nangis",49,3);
+        Bank CAPNangis = new Bank("Crédit Agricole Nangis",49,3);
         
         /*mListView = (ListView) findViewById(R.id.banksListview);
         ArrayAdapter<String> adaptzer = new ArrayAdapter<String>(MainActivity.this,
