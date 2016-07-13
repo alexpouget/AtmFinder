@@ -43,11 +43,11 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
-    ListView mListView;
+    /*ListView mListView;
     String[] banks = new String[]{
             "Antoine", "Benoit", "Cyril", "David", "Eloise", "Florent",
             "Gerard", "Hugo", "Ingrid", "Jonathan", "Kevin"
-    };
+    };*/
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -55,10 +55,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        mListView = (ListView) findViewById(R.id.banksListview);
+        /*mListView = (ListView) findViewById(R.id.banksListview);
         ArrayAdapter<String> adaptzer = new ArrayAdapter<String>(MainActivity.this,
                 android.R.layout.simple_list_item_1, banks);
-        mListView.setAdapter(adaptzer);
+        mListView.setAdapter(adaptzer);*/
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
