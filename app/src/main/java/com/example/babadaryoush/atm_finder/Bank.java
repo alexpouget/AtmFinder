@@ -6,10 +6,10 @@ package com.example.babadaryoush.atm_finder;
 
 public class Bank {
     String name;
-    float longitude;
-    float latitude;
+    double longitude;
+    double latitude;
 
-    public Bank (String name, float longitude, float latitude){
+    public Bank (String name,double latitude, double longitude){
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -19,11 +19,11 @@ public class Bank {
         return name;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
