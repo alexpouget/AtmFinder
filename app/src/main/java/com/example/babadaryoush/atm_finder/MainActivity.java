@@ -1,12 +1,20 @@
 package com.example.babadaryoush.atm_finder;
 
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,16 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import static com.example.babadaryoush.atm_finder.R.id.banksListview;
-import static com.example.babadaryoush.atm_finder.R.id.search_button;
+import android.widget.Toast;
 
 /**
  * Created by Baba Daryoush on 27/06/2016.
@@ -43,26 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     android.support.v7.app.ActionBarDrawerToggle mDrawerToggle;
-    /*ListView mListView;
-    String[] banks = new String[]{
-            "Antoine", "Benoit", "Cyril", "David", "Eloise", "Florent",
-            "Gerard", "Hugo", "Ingrid", "Jonathan", "Kevin"
-    };*/
-
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Bank BNPNangis = new Bank("BNP Nangis",49,3);
-        Bank CLNangis = new Bank("Credit Lyonnais Nangis",49,3);
-        Bank SGPNangis = new Bank("Société Générale Nangis",49,3);
-        Bank CAPNangis = new Bank("Crédit Agricole Nangis",49,3);
-        
-        /*mListView = (ListView) findViewById(R.id.banksListview);
-        ArrayAdapter<String> adaptzer = new ArrayAdapter<String>(MainActivity.this,
-                android.R.layout.simple_list_item_1, banks);
-        mListView.setAdapter(adaptzer);*/
+        checkGeolocation();
 
         mTitle = mDrawerTitle = getTitle();
         mNavigationDrawerItemTitles = getResources().getStringArray(R.array.navigation_drawer_items_array);
@@ -110,6 +95,36 @@ public class MainActivity extends AppCompatActivity {
     void setupDrawerToggle(){
         mDrawerToggle = new android.support.v7.app.ActionBarDrawerToggle(this,mDrawerLayout,toolbar,R.string.app_name, R.string.app_name);
         mDrawerToggle.syncState();
+    }
+
+    public void checkGeolocation(){
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        boolean enabled = service
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!enabled) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Geolocalisation désactivée")
+                    .setMessage("Oups. La Géolocalisation n'est pas activée. Voulez-vous l'activer ?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //finish();
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        /*Intent intent = getIntent();
+        finish();
+        startActivity(intent);*/
     }
 
 //onclick d'un des menus du drawer
