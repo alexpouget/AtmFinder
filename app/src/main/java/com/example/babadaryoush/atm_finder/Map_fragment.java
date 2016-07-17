@@ -9,7 +9,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -22,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
-
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,6 +51,11 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     private MapView mapView;
     private GoogleMap googleMap;
 
+    private static final String[] PERMISSIONS = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -61,30 +67,38 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
        /*LocationManager service = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         boolean enabled = service.isProviderEnabled(LocationManager.GPS_PROVIDER);*/
 
-            if (checkLocationPermission()) {
-                locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(PERMISSIONS, 1337);
+            } else {
+                Toast.makeText(getContext(), "permission error", Toast.LENGTH_SHORT).show();            }
+        }
+        else {
+            if(geolocEnabled()){Toast.makeText(getContext(), "Géolocalisation en cours", Toast.LENGTH_SHORT).show();}
 
-                Criteria criteria = new Criteria();
-                provider = locationManager.getBestProvider(criteria, false);
-                Location location = locationManager.getLastKnownLocation(provider);
-                if (location != null) {
-                    System.out.println("Provider " + provider + " has been selected.");
-                    onLocationChanged(location);
-                } else {
-                    System.out.println("location not available");
-                }
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            provider = locationManager.getBestProvider(criteria, false);
+            Location location = locationManager.getLastKnownLocation(provider);
+            if (location != null) {
+                System.out.println("Provider " + provider + " has been selected.");
+                onLocationChanged(location);
+            } else {
+                System.out.println("location not available");
             }
+        }
             return rootView;
         }
 
-
-    public boolean checkLocationPermission()
-    {
-        int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION);
-        System.out.println("RESULTAT----> "+permissionCheck+", JSAIS PAS C MABIIITE-----> "+ PackageManager.PERMISSION_GRANTED);
-
-        return (permissionCheck == PackageManager.PERMISSION_GRANTED);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
+        getActivity().recreate();
+        //relancer l'activity
+        // map.setMyLocationEnabled(true);
     }
 
 
@@ -122,33 +136,37 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
             map.addMarker(new MarkerOptions().position(location1).title(bank.getName()).icon(BitmapDescriptorFactory
                     .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
         }*/
-        //LatLng location = new LatLng(48.849145, 2.389659100000017);
-        if (checkLocationPermission()) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
+        System.out.println("mapasync: latitude->"+latitude+", longitude->"+longitude);
             LatLng location = new LatLng(latitude, longitude);
 
             map.addMarker(new MarkerOptions().position(location).title("Chez Michax la tchoin"));
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 11.0f));
-        }
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 13.0f));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-       if(checkLocationPermission())
-        //   if(geolocEnabled())
+           if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                   || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+               return;
             locationManager.requestLocationUpdates(provider, 400, 1, this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(checkLocationPermission()){
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
             locationManager.removeUpdates(this);
-        }
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        if(geolocEnabled()){Toast.makeText(getContext(), "Géolocalisation en cours", Toast.LENGTH_SHORT).show();}
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.maps);
@@ -158,6 +176,14 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
                 .setMessage(latitude+" / "+longitude)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();*/
+    }
+
+    boolean geolocEnabled(){
+        LocationManager service = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
+        boolean enabled = service
+                .isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return enabled;
     }
 
     @Override
