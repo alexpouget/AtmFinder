@@ -3,6 +3,7 @@ package com.example.babadaryoush.atm_finder;
 import android.*;
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -101,9 +102,12 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
-        getActivity().recreate();
+        //getActivity().recreate();
+        Intent starterIntent = getActivity().getIntent();
+        getActivity().finish();
+        startActivity(starterIntent);
         //relancer l'activity
-        // map.setMyLocationEnabled(true);
+         //map.setMyLocationEnabled(true);
     }
 
 
@@ -183,18 +187,24 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onResume() {
         super.onResume();
-        if(geolocEnabled()){Toast.makeText(getContext(), "Géolocalisation en cours", Toast.LENGTH_SHORT).show();}
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                        || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                    return;
-               //locationManager.requestLocationUpdates(provider, 400, 1, this);
+        //locationManager.requestLocationUpdates(provider, 400, 1, this);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         List<String> providers = locationManager.getProviders(true);
 
         for (String provider : providers) {
             locationManager.requestLocationUpdates(provider, 0, 0, this);
-        }
+        }/*
+        Location location = getMyLocation();
+        if (location != null) {
+            onLocationChanged(location);
+
+        } else {
+            System.out.println("location not available");
+        }*/
     }
 
     @Override
@@ -212,12 +222,6 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         longitude = location.getLongitude();
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.maps);
         mapFragment.getMapAsync(this);
-        /*new AlertDialog.Builder(getContext())
-                .setTitle("geoloc")
-                .setMessage(latitude+" / "+longitude)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();*/
-        //locationManager = null;
     }
 
     boolean geolocEnabled(){
