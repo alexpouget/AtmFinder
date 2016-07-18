@@ -45,6 +45,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     private String provider;
     private Double latitude=0.0;
     private Double longitude=0.0;
+    private int i=0;
 
     public Map_fragment() {
     }
@@ -180,8 +181,10 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         System.out.println("mapasync: latitude->"+latitude+", longitude->"+longitude);
             LatLng location = new LatLng(latitude, longitude);
 
+        if(i>0)map.clear();
             map.addMarker(new MarkerOptions().position(location).title("Chez Michax la tchoin"));
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 13.0f));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 16.0f));
+        i++;
     }
 
     @Override
