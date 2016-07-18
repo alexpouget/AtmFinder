@@ -122,9 +122,6 @@ public class MainActivity extends AppCompatActivity {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }
-        /*Intent intent = getIntent();
-        finish();
-        startActivity(intent);*/
     }
 
 //onclick d'un des menus du drawer

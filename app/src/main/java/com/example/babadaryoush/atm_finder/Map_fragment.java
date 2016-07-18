@@ -42,8 +42,8 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
 
     private LocationManager locationManager;
     private String provider;
-    private Double latitude=49.0;
-    private Double longitude=3.0;
+    private Double latitude=0.0;
+    private Double longitude=0.0;
 
     public Map_fragment() {
     }
@@ -67,7 +67,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
        /*LocationManager service = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         boolean enabled = service.isProviderEnabled(LocationManager.GPS_PROVIDER);*/
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        /*if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(PERMISSIONS, 1337);
@@ -75,19 +75,24 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
                 Toast.makeText(getContext(), "permission error", Toast.LENGTH_SHORT).show();            }
         }
         else {
-            if(geolocEnabled()){Toast.makeText(getContext(), "Géolocalisation en cours", Toast.LENGTH_SHORT).show();}
-
             locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
-            provider = locationManager.getBestProvider(criteria, false);
+            provider = locationManager.getBestProvider(criteria, true);
             Location location = locationManager.getLastKnownLocation(provider);
             if (location != null) {
                 System.out.println("Provider " + provider + " has been selected.");
                 onLocationChanged(location);
             } else {
                 System.out.println("location not available");
+            }*/
+            Location location = getMyLocation();
+            if (location != null) {
+                onLocationChanged(location);
+
+            } else {
+                System.out.println("location not available");
             }
-        }
+        //}
             return rootView;
         }
 
@@ -101,6 +106,35 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         // map.setMyLocationEnabled(true);
     }
 
+
+    Location getMyLocation(){
+        Location bestLocation = null;
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(PERMISSIONS, 1337);
+            } else {
+                Toast.makeText(getContext(), "permission error", Toast.LENGTH_SHORT).show();            }
+        }
+        else {
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+            List<String> providers = locationManager.getProviders(true);
+
+            for (String provider : providers) {
+                locationManager.requestLocationUpdates(provider, 0, 0, this);
+                Location l = locationManager.getLastKnownLocation(provider);
+
+                if (l == null)
+                    continue;
+
+                // Found best last known location: %s", l);
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy())
+                    bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -149,10 +183,18 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onResume() {
         super.onResume();
-           if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                   || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-               return;
-            locationManager.requestLocationUpdates(provider, 400, 1, this);
+        if(geolocEnabled()){Toast.makeText(getContext(), "Géolocalisation en cours", Toast.LENGTH_SHORT).show();}
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                       || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                   return;
+               //locationManager.requestLocationUpdates(provider, 400, 1, this);
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        List<String> providers = locationManager.getProviders(true);
+
+        for (String provider : providers) {
+            locationManager.requestLocationUpdates(provider, 0, 0, this);
+        }
     }
 
     @Override
@@ -166,7 +208,6 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onLocationChanged(Location location) {
-        if(geolocEnabled()){Toast.makeText(getContext(), "Géolocalisation en cours", Toast.LENGTH_SHORT).show();}
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.maps);
@@ -176,6 +217,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
                 .setMessage(latitude+" / "+longitude)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();*/
+        //locationManager = null;
     }
 
     boolean geolocEnabled(){
