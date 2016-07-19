@@ -2,15 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F00000">
+    android:background="#F0000000"
+    android:weightSum="1">
     <TextView
         android:id="@+id/label"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="100dp"
+        android:text="Choisissez le périmètre de recherche :"
+        android:layout_marginTop="59dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textSize="45dp"
-        android:text="Paramètres"
-        android:textStyle="bold"/>
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <SeekBar
+        android:layout_width="372dp"
+        android:layout_height="wrap_content"
+        android:progress="20"
+        android:id="@+id/seekBar" />
 </LinearLayout>

@@ -6,7 +6,7 @@
     android:background="#F0000000">
 
     <TextView
-        android:text="Entrez une ville, une adresse ou un code postal:"
+        android:text="Entrez votre banque :"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/searchTxtView" />
@@ -17,7 +17,7 @@
         android:inputType="textPersonName"
         android:ems="10"
         android:id="@+id/searchTxtField"
-        android:hint="ville, adresse ou code postal"
+        android:hint="BNP, Société Générale, Crédit Agricole..."
         android:selectAllOnFocus="false"
         android:singleLine="true" />
 
