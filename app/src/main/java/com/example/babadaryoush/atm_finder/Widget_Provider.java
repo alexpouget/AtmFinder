@@ -19,13 +19,10 @@ public class Widget_Provider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
                          int[] appWidgetIds) {
 
-        // Get all ids
         ComponentName thisWidget = new ComponentName(context,
                 Widget_Provider.class);
         int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
         for (int widgetId : allWidgetIds) {
-            // create some random data
-            //int number = (new Random().nextInt(100));
             String bank = "";
             if(Bank.banks2String.size()>0){
                     bank = Bank.banks2String.get(0);
@@ -37,9 +34,7 @@ public class Widget_Provider extends AppWidgetProvider {
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.widget_layout);
             Log.w("WidgetExample", String.valueOf(bank));
-            // Set the text
             remoteViews.setTextViewText(R.id.update, String.valueOf(bank));
-            // Register an onClickListener
             Intent intent = new Intent(context, Widget_Provider.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);

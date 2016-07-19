@@ -110,7 +110,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
             List<String> providers = locationManager.getProviders(true);
 
             for (String provider : providers) {
-                locationManager.requestLocationUpdates(provider, 0, 0, this);
+                locationManager.requestLocationUpdates(provider, 1500, 0, this);
                 Location l = locationManager.getLastKnownLocation(provider);
 
                 if (l == null)
@@ -146,7 +146,6 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
             //latitude=48.849265;
             //longitude=2.389843;
             LatLng location = new LatLng(latitude, longitude);
-            //LatLng location = new LatLng(48.849265, 2.389843);
 
             if (i > 0) map.clear();
             map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.m)).position(location).title("Ma position"));
@@ -176,7 +175,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         List<String> providers = locationManager.getProviders(true);
 
         for (String provider : providers) {
-            locationManager.requestLocationUpdates(provider, 0, 0, this);
+            locationManager.requestLocationUpdates(provider, 1500, 0, this);
         }
     }
 
@@ -244,22 +243,15 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
             return lstBank;
     }
 
-    public ArrayList<String> bankListToString(ArrayList<Bank> lst){
+    public static ArrayList<String> bankListToString(ArrayList<Bank> lst, Double latitude, Double longitude){
         ArrayList<String> lstString = new ArrayList<>();
 
         for(Bank bank : lst){
             lstString.add(bank.getName()+" "+bank.getAddress()+" située à "
-                    +Bank.distance(latitude, longitude, bank.getLatitude(), bank.getLongitude())+"m");
+                    +String.format("%.1f", Bank.distance(latitude, longitude, bank.getLatitude(), bank.getLongitude()))+"m");
         }
 
         return lstString;
     }
 
-    public boolean checkGeolocation(){
-        LocationManager service = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-
-        return service
-                .isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        }
     }

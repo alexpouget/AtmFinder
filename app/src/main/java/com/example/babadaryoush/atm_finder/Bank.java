@@ -2,6 +2,7 @@ package com.example.babadaryoush.atm_finder;
 
 import android.content.Context;
 
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.w3c.dom.Document;
@@ -70,148 +71,41 @@ public class Bank {
         ArrayList<Bank> nearestBankList = new ArrayList<>();
         banks2String = new ArrayList<>();
         ArrayList<Bank> substitute = bankList;
+        Bank nearestBank = null;
+        Bank lastBank = null;
 
         if(substitute!=null) {
-            Bank nearestBank = null;
-            Bank lastBank = null;
-            for (Bank bank : substitute) {
-                if (lastBank == null) {
-                    lastBank = bank;
-                    continue;
-                }
-                if (distance(bank.getLatitude(), bank.getLongitude(), myLoc.latitude, myLoc.longitude)
-                        < distance(lastBank.getLatitude(), lastBank.getLongitude(), myLoc.latitude, myLoc.longitude)) {
-                    nearestBank = bank;
-                    lastBank = bank;
-                } else {
-                    nearestBank = lastBank;
-                }
-            }
-            if(nearestBank!=null) {
-                nearestBankList.add(nearestBank);
-                System.out.println("COUNTOR: " + substitute.size() + ", TF: " + substitute.contains(nearestBank));
-                substitute.remove(nearestBank);
-                System.out.println("COUNTORZZ: " + substitute.size() + ", TF: " + substitute.contains(nearestBank));
-                banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                        + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                        nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
-                nearestBank = null;
-                lastBank = null;
-            }
-
-            if(substitute.size()>0) {
-                for (Bank bank : substitute) {
-                    if (lastBank == null) {
-                        lastBank = bank;
-                        continue;
-                    }
-                    if (distance(bank.getLatitude(), bank.getLongitude(), myLoc.latitude, myLoc.longitude)
-                            < distance(lastBank.getLatitude(), lastBank.getLongitude(), myLoc.latitude, myLoc.longitude)) {
-                        nearestBank = bank;
-                        lastBank = bank;
-                    } else {
-                        nearestBank = lastBank;
-                    }
-                }
-                if(nearestBank!=null) {
-                    nearestBankList.add(nearestBank);
-                    substitute.remove(nearestBank);
-                    banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                            + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                            nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
-                    nearestBank = null;
-                    lastBank = null;
-                }
-                if(substitute.size()>0) {
-                    for (Bank bank : substitute) {
-                        if (lastBank == null) {
-                            lastBank = bank;
-                            continue;
-                        }
-                        if (distance(bank.getLatitude(), bank.getLongitude(), myLoc.latitude, myLoc.longitude)
-                                < distance(lastBank.getLatitude(), lastBank.getLongitude(), myLoc.latitude, myLoc.longitude)) {
-                            nearestBank = bank;
-                            lastBank = bank;
-                        } else {
-                            nearestBank = lastBank;
-                        }
-                    }
-                    if(nearestBank!=null) {
-                        nearestBankList.add(nearestBank);
-                        substitute.remove(nearestBank);
-                        banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                                + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                                nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
-                        nearestBank = null;
-                        lastBank = null;
-                    }
-
-                    if(substitute.size()>0) {
-                        for (Bank bank : substitute) {
-                            if (lastBank == null) {
-                                lastBank = bank;
-                                continue;
-                            }
-                            if (distance(bank.getLatitude(), bank.getLongitude(), myLoc.latitude, myLoc.longitude)
-                                    < distance(lastBank.getLatitude(), lastBank.getLongitude(), myLoc.latitude, myLoc.longitude)) {
-                                nearestBank = bank;
-                                lastBank = bank;
-                            } else {
-                                nearestBank = lastBank;
-                            }
-                        }
-                        if(nearestBank!=null) {
-                            nearestBankList.add(nearestBank);
-                            substitute.remove(nearestBank);
-                            banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                                    + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                                    nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
-                            nearestBank = null;
-                            lastBank = null;
-                        }
-                        if(substitute.size()>0) {
-                            for (Bank bank : substitute) {
-                                if (lastBank == null) {
-                                    lastBank = bank;
-                                    continue;
-                                }
-                                if (distance(bank.getLatitude(), bank.getLongitude(), myLoc.latitude, myLoc.longitude)
-                                        < distance(lastBank.getLatitude(), lastBank.getLongitude(), myLoc.latitude, myLoc.longitude)) {
-                                    nearestBank = bank;
-                                    lastBank = bank;
-                                } else {
-                                    nearestBank = lastBank;
-                                }
-                            }
-                            if(nearestBank!=null) {
-                                nearestBankList.add(nearestBank);
-                                banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                                        + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                                        nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
-                            }
-                        }
-                    }
-                }
+            for(int i=0; i<5; i++) {
+                nearestBankLoop(substitute, nearestBankList, lastBank, myLoc, nearestBank);
             }
         }
+        banks2String = Map_fragment.bankListToString(nearestBankList, myLoc.latitude, myLoc.longitude);
         return nearestBankList;
     }
 
-    @Override
-    public String toString() {
-        return this.getName() + " " + this.getAddress() + " située à "
-                + String.format("%.1f");
+    public static void nearestBankLoop(ArrayList<Bank> substitute, ArrayList<Bank> nearestBankList ,Bank lastBank, LatLng myLoc, Bank nearestBank){
+        for (Bank bank : substitute) {
+            if (lastBank == null) {
+                lastBank = bank;
+                continue;
+            }
+            if (distance(bank.getLatitude(), bank.getLongitude(), myLoc.latitude, myLoc.longitude)
+                    < distance(lastBank.getLatitude(), lastBank.getLongitude(), myLoc.latitude, myLoc.longitude)) {
+                nearestBank = bank;
+                lastBank = bank;
+            } else {
+                nearestBank = lastBank;
+            }
+        }
+        if(nearestBank!=null) {
+            nearestBankList.add(nearestBank);
+            substitute.remove(nearestBank);
+            nearestBank = null;
+            lastBank = null;
+        }
     }
 
     public static double distance(double fromLat, double fromLon, double toLat, double toLon) {
-        /*double radius = 6378100 ;
-        double deltaLat = toLat - fromLat;
-        double deltaLon = toLon - fromLon;
-        double angle = 2 * Math.asin( Math.sqrt(
-                Math.pow(Math.sin(deltaLat/2), 2) +
-                        Math.cos(fromLat) * Math.cos(toLat) *
-                                Math.pow(Math.sin(deltaLon/2), 2) ) );
-        return radius * angle;*/
         double x1 = fromLat;
         double y1 =  fromLon;
 
