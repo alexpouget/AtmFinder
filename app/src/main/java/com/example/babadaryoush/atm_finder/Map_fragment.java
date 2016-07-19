@@ -57,6 +57,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     private Double longitude=0.0;
     private int i=0;
 //    public static ArrayList<String> banks2String;
+    public static ArrayList<Bank> bankList;
 
     public Map_fragment() {
     }
@@ -73,6 +74,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.map_layout, container, false);
+
             Location location = getMyLocation();
             if (location != null) {
                 onLocationChanged(location);
@@ -80,7 +82,6 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
             } else {
                 System.out.println("location not available");
             }
-
         return rootView;
         }
     @Override
@@ -132,9 +133,12 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onMapReady(GoogleMap map) {
+        bankList = new ArrayList<>();
+        bankList = nearestBanks_List();
 
         // map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         if(geolocEnabled()) {
+
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 return;
@@ -145,18 +149,19 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
             //LatLng location = new LatLng(48.849265, 2.389843);
 
             if (i > 0) map.clear();
-            map.addMarker(new MarkerOptions().position(location).title("Ma position").icon(BitmapDescriptorFactory.fromResource(R.drawable.man_sprinting)));
+            map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.m)).position(location).title("Ma position"));
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f));
             i++;
 
                 /*Parcours de la list des ATM aux alentours et ajout du marqueur sur la carte*/
-            for (Bank bank : bankList()) {
+            for (Bank bank : bankList) {
                 LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
                 map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
-                        bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.euro_yellow_32)));
+                        bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.euro)));
                 System.out.println(bank.getName() + " " + bank.getAddress() + ": LAT->" + bank.getLatitude() + ", LON->" + bank.getLongitude() + ", DISTANCE->" + Bank.distance(48.849265, 2.389843, bank.getLatitude(), bank.getLongitude()));
             }
-            Bank.getNearestBankList(bankList(), location);
+
+            Bank.getNearestBankList(bankList, location);
         }
     }
 
@@ -166,7 +171,6 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                        || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                    return;
-        //locationManager.requestLocationUpdates(provider, 400, 1, this);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         List<String> providers = locationManager.getProviders(true);
@@ -217,7 +221,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
 
     }
 
-    public ArrayList<Bank> bankList() {
+    public ArrayList<Bank> nearestBanks_List() {
         ArrayList<Bank>lstBank = new ArrayList<>();
 
         InputStreamReader is = null;
@@ -230,16 +234,12 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
                     String[] lines = line.split(",");
                     Double lat = new Double(lines[1]);
                     Double lon = new Double(lines[0]);
-                //System.out.println("zabi"+line);
-                //if(lat<48.968157 && lat>48.801774 && lon>2.311595 && lon<2.334492){
-                if(Bank.distance(latitude, longitude, lat, lon)<30000.0) {
+                if(Bank.distance(latitude, longitude, lat, lon)<1000) {
                     Bank bank = new Bank(lat, lon, lines[2], lines[3]);
                     lstBank.add(bank);
-                    //System.out.println("ADD: "+lstBanks.add(bank));
                 }
             }
         } catch (IOException e) {
-            System.out.println("fucknnn"+e);
         }
             return lstBank;
     }
@@ -249,7 +249,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
 
         for(Bank bank : lst){
             lstString.add(bank.getName()+" "+bank.getAddress()+" située à "
-                    +Bank.distance(latitude, longitude, bank.getLatitude(), bank.getLongitude())*0.01+"m");
+                    +Bank.distance(latitude, longitude, bank.getLatitude(), bank.getLongitude())+"m");
         }
 
         return lstString;

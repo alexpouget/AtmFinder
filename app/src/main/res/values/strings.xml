@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Atm_Finder</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">ATM Finder</string>
     <string name="sex">Sisi Alk</string>
     <string name="mon_texte">drawer</string>
     <string-array name="navigation_drawer_items_array">

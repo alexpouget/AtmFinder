@@ -66,7 +66,6 @@ public class Bank {
 
     public void setLatitude(float latitude) {this.latitude = latitude;}
 
-
     public static ArrayList<Bank> getNearestBankList(ArrayList<Bank>bankList, LatLng myLoc){
         ArrayList<Bank> nearestBankList = new ArrayList<>();
         banks2String = new ArrayList<>();
@@ -88,15 +87,17 @@ public class Bank {
                     nearestBank = lastBank;
                 }
             }
-            nearestBankList.add(nearestBank);
-            System.out.println("COUNTOR: " + substitute.size() + ", TF: " + substitute.contains(nearestBank));
-            substitute.remove(nearestBank);
-            System.out.println("COUNTORZZ: " + substitute.size() + ", TF: " + substitute.contains(nearestBank));
-            banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                    + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                    nearestBank.getLatitude(), nearestBank.getLongitude()) * 0.01) + "m");
-            nearestBank = null;
-            lastBank = null;
+            if(nearestBank!=null) {
+                nearestBankList.add(nearestBank);
+                System.out.println("COUNTOR: " + substitute.size() + ", TF: " + substitute.contains(nearestBank));
+                substitute.remove(nearestBank);
+                System.out.println("COUNTORZZ: " + substitute.size() + ", TF: " + substitute.contains(nearestBank));
+                banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
+                        + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
+                        nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
+                nearestBank = null;
+                lastBank = null;
+            }
 
             if(substitute.size()>0) {
                 for (Bank bank : substitute) {
@@ -112,14 +113,15 @@ public class Bank {
                         nearestBank = lastBank;
                     }
                 }
-                nearestBankList.add(nearestBank);
-                substitute.remove(nearestBank);
-                banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                        + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                        nearestBank.getLatitude(), nearestBank.getLongitude()) * 0.01) + "m");
-                nearestBank = null;
-                lastBank = null;
-
+                if(nearestBank!=null) {
+                    nearestBankList.add(nearestBank);
+                    substitute.remove(nearestBank);
+                    banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
+                            + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
+                            nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
+                    nearestBank = null;
+                    lastBank = null;
+                }
                 if(substitute.size()>0) {
                     for (Bank bank : substitute) {
                         if (lastBank == null) {
@@ -134,13 +136,15 @@ public class Bank {
                             nearestBank = lastBank;
                         }
                     }
-                    nearestBankList.add(nearestBank);
-                    substitute.remove(nearestBank);
-                    banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                            + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                            nearestBank.getLatitude(), nearestBank.getLongitude()) * 0.01) + "m");
-                    nearestBank = null;
-                    lastBank = null;
+                    if(nearestBank!=null) {
+                        nearestBankList.add(nearestBank);
+                        substitute.remove(nearestBank);
+                        banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
+                                + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
+                                nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
+                        nearestBank = null;
+                        lastBank = null;
+                    }
 
                     if(substitute.size()>0) {
                         for (Bank bank : substitute) {
@@ -156,14 +160,15 @@ public class Bank {
                                 nearestBank = lastBank;
                             }
                         }
-                        nearestBankList.add(nearestBank);
-                        substitute.remove(nearestBank);
-                        banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                                + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                                nearestBank.getLatitude(), nearestBank.getLongitude()) * 0.01) + "m");
-                        nearestBank = null;
-                        lastBank = null;
-
+                        if(nearestBank!=null) {
+                            nearestBankList.add(nearestBank);
+                            substitute.remove(nearestBank);
+                            banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
+                                    + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
+                                    nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
+                            nearestBank = null;
+                            lastBank = null;
+                        }
                         if(substitute.size()>0) {
                             for (Bank bank : substitute) {
                                 if (lastBank == null) {
@@ -178,10 +183,12 @@ public class Bank {
                                     nearestBank = lastBank;
                                 }
                             }
-                            nearestBankList.add(nearestBank);
-                            banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
-                                    + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
-                                    nearestBank.getLatitude(), nearestBank.getLongitude()) * 0.01) + "m");
+                            if(nearestBank!=null) {
+                                nearestBankList.add(nearestBank);
+                                banks2String.add(nearestBank.getName() + " " + nearestBank.getAddress() + " située à "
+                                        + String.format("%.1f", nearestBank.distance(myLoc.latitude, myLoc.longitude,
+                                        nearestBank.getLatitude(), nearestBank.getLongitude())) + "m");
+                            }
                         }
                     }
                 }
@@ -190,15 +197,36 @@ public class Bank {
         return nearestBankList;
     }
 
-   public static double distance(double fromLat, double fromLon, double toLat, double toLon) {
-        double radius = 6378100 ;   // approximate Earth radius, *in meters*
+    @Override
+    public String toString() {
+        return this.getName() + " " + this.getAddress() + " située à "
+                + String.format("%.1f");
+    }
+
+    public static double distance(double fromLat, double fromLon, double toLat, double toLon) {
+        /*double radius = 6378100 ;
         double deltaLat = toLat - fromLat;
         double deltaLon = toLon - fromLon;
         double angle = 2 * Math.asin( Math.sqrt(
                 Math.pow(Math.sin(deltaLat/2), 2) +
                         Math.cos(fromLat) * Math.cos(toLat) *
                                 Math.pow(Math.sin(deltaLon/2), 2) ) );
-        return radius * angle;
-    }
+        return radius * angle;*/
+        double x1 = fromLat;
+        double y1 =  fromLon;
 
+
+        double x2 = toLat;
+        double y2 =  toLon;
+        int rayon = 6378; // km
+        double dLat = Math.toRadians(x2-x1);
+        double dLon = Math.toRadians(y2-y1);
+        double lat1 = Math.toRadians(x1);
+        double lat2 = Math.toRadians(x2);
+
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        //System.out.println("SSSSSS: "+rayon*c);
+        return rayon * c*1000;
+    }
 }
