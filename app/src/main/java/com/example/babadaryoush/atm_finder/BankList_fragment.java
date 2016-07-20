@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,21 +36,27 @@ public class BankList_fragment extends Fragment {
 
         final ListView lv = (ListView) rootView.findViewById(R.id.banksListview);
 
-
             ArrayAdapter adapter = new ArrayAdapter(getActivity(),android.R.layout.simple_list_item_1, Bank.banks2String);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
 
+                Map_fragment.isClicked = 0;
                 Object j = lv.getItemAtPosition(position);
                 Toast.makeText(getActivity(),""+j,
                         Toast.LENGTH_LONG).show();
+                String[] myloc = j.toString().split(":");
+                String[] latlng = myloc[1].split("/");
+                Map_fragment.bankLat = new Double(latlng[0]);
+                Map_fragment.bankLng = new Double(latlng[1]);
+
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
             }
         });
         return rootView;
     }
+
 }

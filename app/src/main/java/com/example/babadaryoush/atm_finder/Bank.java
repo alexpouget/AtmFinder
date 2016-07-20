@@ -79,7 +79,7 @@ public class Bank {
                 nearestBankLoop(substitute, nearestBankList, lastBank, myLoc, nearestBank);
             }
         }
-        banks2String = Map_fragment.bankListToString(nearestBankList, myLoc.latitude, myLoc.longitude);
+        banks2String = bankListToString(nearestBankList, myLoc.latitude, myLoc.longitude);
         return nearestBankList;
     }
 
@@ -122,5 +122,18 @@ public class Bank {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         //System.out.println("SSSSSS: "+rayon*c);
         return rayon * c*1000;
+    }
+
+
+    public static ArrayList<String> bankListToString(ArrayList<Bank> lst, Double latitude, Double longitude){
+        ArrayList<String> lstString = new ArrayList<>();
+
+        for(Bank bank : lst){
+            lstString.add(bank.getName()+" "+bank.getAddress()+" située à "
+                    +String.format("%.1f", Bank.distance(latitude, longitude, bank.getLatitude(),
+                    bank.getLongitude()))+"m\n"+"Données GPS: "+bank.getLatitude()+"/"+bank.getLongitude());
+        }
+
+        return lstString;
     }
 }

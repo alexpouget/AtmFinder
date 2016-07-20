@@ -23,6 +23,7 @@ import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -56,14 +57,18 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     private Double latitude=0.0;
     private Double longitude=0.0;
     private int i=0;
+    public static int isClicked=1;
 //    public static ArrayList<String> banks2String;
     public static ArrayList<Bank> bankList;
+    public static Double bankLat;
+    public static Double bankLng;
+
 
     public Map_fragment() {
     }
 
     private MapView mapView;
-    private GoogleMap googleMap;
+    public static GoogleMap googleMap;
 
     private static final String[] PERMISSIONS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -74,7 +79,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.map_layout, container, false);
-
+System.out.println("ISCLICKED createview: "+isClicked);
             Location location = getMyLocation();
             if (location != null) {
                 onLocationChanged(location);
@@ -127,7 +132,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.maps);
-
+        googleMap = mapFragment.getMap();
         mapFragment.getMapAsync(this);
     }
 
@@ -136,13 +141,11 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         bankList = new ArrayList<>();
         bankList = nearestBanks_List();
 
-        // map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         if(geolocEnabled()) {
 
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 return;
-            System.out.println("mapasync: latitude->" + latitude + ", longitude->" + longitude);
             //latitude=48.849265;
             //longitude=2.389843;
             LatLng location = new LatLng(latitude, longitude);
@@ -151,17 +154,30 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
             map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.m)).position(location).title("Ma position"));
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f));
             i++;
+            System.out.println("ISCLICKED mapasync: "+isClicked);
 
+            if(isClicked==1) {
                 /*Parcours de la list des ATM aux alentours et ajout du marqueur sur la carte*/
-            for (Bank bank : bankList) {
-                LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
-                map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
-                        bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.euro)));
-                System.out.println(bank.getName() + " " + bank.getAddress() + ": LAT->" + bank.getLatitude() + ", LON->" + bank.getLongitude() + ", DISTANCE->" + Bank.distance(48.849265, 2.389843, bank.getLatitude(), bank.getLongitude()));
+                for (Bank bank : bankList) {
+                    LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
+                    map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
+                            bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.euro)));
+                    System.out.println(bank.getName() + " " + bank.getAddress() + ": LAT->" + bank.getLatitude() + ", LON->" + bank.getLongitude() + ", DISTANCE->" + Bank.distance(48.849265, 2.389843, bank.getLatitude(), bank.getLongitude()));
+                }
+            }
+            if(isClicked==0){
+                Double blatitude = bankLat;
+                Double blongitude = bankLng;
+                Button btn = (Button) getActivity().findViewById(R.id.filterDeactivate);
+                btn.setVisibility(View.VISIBLE);
+                btn.setOnClickListener(deactivateFilterListener);
+                onMapFiltered(blatitude, blongitude, map);
             }
 
             Bank.getNearestBankList(bankList, location);
         }
+        System.out.println("ISCLICKED mapasyncEND: "+isClicked);
+
     }
 
     @Override
@@ -173,9 +189,14 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         List<String> providers = locationManager.getProviders(true);
-
+    if(isClicked==0) {
         for (String provider : providers) {
-            locationManager.requestLocationUpdates(provider, 1500, 0, this);
+            locationManager.requestLocationUpdates(provider, 15000000, 0, this);
+        }
+    }if(isClicked==1) {
+            for (String provider : providers) {
+                locationManager.requestLocationUpdates(provider, 1500, 0, this);
+            }
         }
     }
 
@@ -242,16 +263,30 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
         }
             return lstBank;
     }
+    public static void onMapFiltered(Double lat, Double lng, GoogleMap map) {
+        System.out.println("ISCLICKED mapfiltered: "+isClicked);
 
-    public static ArrayList<String> bankListToString(ArrayList<Bank> lst, Double latitude, Double longitude){
-        ArrayList<String> lstString = new ArrayList<>();
-
-        for(Bank bank : lst){
-            lstString.add(bank.getName()+" "+bank.getAddress()+" située à "
-                    +String.format("%.1f", Bank.distance(latitude, longitude, bank.getLatitude(), bank.getLongitude()))+"m");
+        for (Bank bank : bankList) {
+                LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
+                if(bank.getLatitude()==lat && bank.getLongitude()==lng) {
+                    map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
+                            bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder)));
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(location1, 15.0f));
+                }
+            }
+        //Bank.getNearestBankList(bankList, myLoc);
         }
+    View.OnClickListener deactivateFilterListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            isClicked=1;
+            Toast.makeText(getContext(), "Chargement en cours.\nVeuillez patienter quelques secondes", Toast.LENGTH_LONG).show();
+            v.setVisibility(View.GONE);
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                return;
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        return lstString;
+        }
+    };
     }
 
-    }
