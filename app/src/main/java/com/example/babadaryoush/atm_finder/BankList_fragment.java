@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ public class BankList_fragment extends Fragment {
                 String[] latlng = myloc[1].split("/");
                 Map_fragment.bankLat = new Double(latlng[0]);
                 Map_fragment.bankLng = new Double(latlng[1]);
+
 
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);

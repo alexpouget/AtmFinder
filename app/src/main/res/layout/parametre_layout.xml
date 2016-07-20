@@ -7,17 +7,28 @@
     <TextView
         android:id="@+id/label"
         android:layout_alignParentTop="true"
-        android:text="Choisissez le périmètre de recherche :"
-        android:layout_marginTop="59dp"
+        android:text="Choisissez le périmètre de recherche (mètre) :"
+        android:layout_marginTop="90dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:textSize="15dp"
         android:textStyle="bold" />
 
-    <SeekBar
-        android:layout_width="372dp"
+    <EditText
+        android:layout_width="102dp"
         android:layout_height="wrap_content"
-        android:progress="20"
-        android:id="@+id/seekBar" />
+        android:inputType="number"
+        android:ems="10"
+        android:text="1000"
+        android:id="@+id/txtRange"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valider"
+        android:id="@+id/button"
+        android:layout_gravity="center_horizontal" />
+
 </LinearLayout>

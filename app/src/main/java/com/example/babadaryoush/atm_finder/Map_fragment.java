@@ -249,7 +249,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     //retourne les banques dans un rayon de 1km
     public ArrayList<Bank> nearestBanks_List() {
         ArrayList<Bank>lstBank = new ArrayList<>();
-
+        if(Parametre_fragment.range==0){Parametre_fragment.range=1000;}
         InputStreamReader is = null;
         try {
             is = new InputStreamReader(getActivity().getApplicationContext().getAssets().open("F-ATM.csv"));
@@ -260,7 +260,7 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
                     String[] lines = line.split(",");
                     Double lat = new Double(lines[1]);
                     Double lon = new Double(lines[0]);
-                if(Bank.distance(latitude, longitude, lat, lon)<1000) {
+                if(Bank.distance(latitude, longitude, lat, lon)<Parametre_fragment.range) {
                     Bank bank = new Bank(lat, lon, lines[2], lines[3]);
                     lstBank.add(bank);
                 }
