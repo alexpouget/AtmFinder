@@ -26,7 +26,7 @@ import java.util.Map;
 //fragment pour effectuer une recherche. On entre une localisation et la map s'actualise avec la position entrée et les ATM les + proches
 public class BankList_fragment extends Fragment {
     public BankList_fragment(){}
-    static boolean fromListViewClicked;
+    static boolean fromListViewClicked=false;
 
     ListView mListView;
     @Override
@@ -43,10 +43,8 @@ public class BankList_fragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
 
-                Map_fragment.isClicked = 0;
+                fromListViewClicked = true;
                 Object j = lv.getItemAtPosition(position);
-                Toast.makeText(getActivity(),""+j,
-                        Toast.LENGTH_LONG).show();
                 String[] myloc = j.toString().split(":");
                 String[] latlng = myloc[1].split("/");
                 Map_fragment.bankLat = new Double(latlng[0]);
@@ -58,5 +56,6 @@ public class BankList_fragment extends Fragment {
         });
         return rootView;
     }
+
 
 }

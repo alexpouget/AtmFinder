@@ -6,7 +6,7 @@
     <Button
         android:layout_width="378dp"
         android:layout_height="wrap_content"
-        android:text="Afficher tous les ATM aux alentours"
+        android:text="Annuler le filtre"
         android:id="@+id/filterDeactivate"
         android:layout_gravity="right"
         android:visibility="gone"/>

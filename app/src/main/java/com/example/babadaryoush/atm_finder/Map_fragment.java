@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.TypedArrayUtils;
 import android.support.v7.app.AlertDialog;
@@ -57,11 +58,11 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     private Double latitude=0.0;
     private Double longitude=0.0;
     private int i=0;
-    public static int isClicked=1;
-//    public static ArrayList<String> banks2String;
+    public static LatLng myLocation;
     public static ArrayList<Bank> bankList;
     public static Double bankLat;
     public static Double bankLng;
+    private Button btn;
 
 
     public Map_fragment() {
@@ -79,7 +80,6 @@ public class Map_fragment extends Fragment implements OnMapReadyCallback, Locati
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.map_layout, container, false);
-System.out.println("ISCLICKED createview: "+isClicked);
             Location location = getMyLocation();
             if (location != null) {
                 onLocationChanged(location);
@@ -138,8 +138,10 @@ System.out.println("ISCLICKED createview: "+isClicked);
 
     @Override
     public void onMapReady(GoogleMap map) {
+        myLocation=new LatLng(latitude, longitude);
         bankList = new ArrayList<>();
         bankList = nearestBanks_List();
+        btn = (Button) getActivity().findViewById(R.id.filterDeactivate);
 
         if(geolocEnabled()) {
 
@@ -154,29 +156,31 @@ System.out.println("ISCLICKED createview: "+isClicked);
             map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.m)).position(location).title("Ma position"));
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f));
             i++;
-            System.out.println("ISCLICKED mapasync: "+isClicked);
 
-            if(isClicked==1) {
+            if(!BankList_fragment.fromListViewClicked && !Search_fragment.fromSearchExecuted) {
                 /*Parcours de la list des ATM aux alentours et ajout du marqueur sur la carte*/
                 for (Bank bank : bankList) {
                     LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
                     map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
                             bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.euro)));
-                    System.out.println(bank.getName() + " " + bank.getAddress() + ": LAT->" + bank.getLatitude() + ", LON->" + bank.getLongitude() + ", DISTANCE->" + Bank.distance(48.849265, 2.389843, bank.getLatitude(), bank.getLongitude()));
                 }
             }
-            if(isClicked==0){
+            if(BankList_fragment.fromListViewClicked){
                 Double blatitude = bankLat;
                 Double blongitude = bankLng;
-                Button btn = (Button) getActivity().findViewById(R.id.filterDeactivate);
                 btn.setVisibility(View.VISIBLE);
-                btn.setOnClickListener(deactivateFilterListener);
+                btn.setOnClickListener(deactivateFilterBtnListener);
                 onMapFiltered(blatitude, blongitude, map);
+            }
+
+            if(Search_fragment.fromSearchExecuted){
+                btn.setVisibility(View.VISIBLE);
+                btn.setOnClickListener(deactivateFilterBtnListener);
+                onMapFilteredByName(Search_fragment.name2filterOn, map);
             }
 
             Bank.getNearestBankList(bankList, location);
         }
-        System.out.println("ISCLICKED mapasyncEND: "+isClicked);
 
     }
 
@@ -189,13 +193,15 @@ System.out.println("ISCLICKED createview: "+isClicked);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         List<String> providers = locationManager.getProviders(true);
-    if(isClicked==0) {
+    if(BankList_fragment.fromListViewClicked ||Search_fragment.fromSearchExecuted) {
         for (String provider : providers) {
             locationManager.requestLocationUpdates(provider, 15000000, 0, this);
         }
-    }if(isClicked==1) {
-            for (String provider : providers) {
-                locationManager.requestLocationUpdates(provider, 1500, 0, this);
+    }   if(!BankList_fragment.fromListViewClicked ||!Search_fragment.fromSearchExecuted) {
+            {
+                for (String provider : providers) {
+                    locationManager.requestLocationUpdates(provider, 1500, 0, this);
+                }
             }
         }
     }
@@ -240,7 +246,7 @@ System.out.println("ISCLICKED createview: "+isClicked);
     public void onProviderDisabled(String provider) {
 
     }
-
+    //retourne les banques dans un rayon de 1km
     public ArrayList<Bank> nearestBanks_List() {
         ArrayList<Bank>lstBank = new ArrayList<>();
 
@@ -263,29 +269,54 @@ System.out.println("ISCLICKED createview: "+isClicked);
         }
             return lstBank;
     }
-    public static void onMapFiltered(Double lat, Double lng, GoogleMap map) {
-        System.out.println("ISCLICKED mapfiltered: "+isClicked);
 
+    //dans le cas de la listview cliquée on focus sur l'ATM cliqué
+    public static void onMapFiltered(Double lat, Double lng, GoogleMap map) {
         for (Bank bank : bankList) {
-                LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
-                if(bank.getLatitude()==lat && bank.getLongitude()==lng) {
-                    map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
-                            bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder)));
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(location1, 15.0f));
-                }
+            LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
+            if(bank.getLatitude()==lat && bank.getLongitude()==lng) {
+                map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
+                        bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder)));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(location1, 15.0f));
             }
-        //Bank.getNearestBankList(bankList, myLoc);
         }
-    View.OnClickListener deactivateFilterListener = new View.OnClickListener() {
+    }
+
+    //dans le cas de la recherche validée on affiche tous les ATM correspondants
+    public void onMapFilteredByName(String name, GoogleMap map) {
+    Boolean found = false;
+        for (Bank bank : bankList) {
+            LatLng location1 = new LatLng(bank.getLatitude(), bank.getLongitude());
+            if(bank.getName().toLowerCase().contains(name.toLowerCase())) {
+                found = true;
+                map.addMarker(new MarkerOptions().position(location1).title(bank.getName() + " " +
+                        bank.getAddress()).icon(BitmapDescriptorFactory.fromResource(R.drawable.placeholder)));
+            }
+        }
+        if(!found){
+            btn = (Button) getActivity().findViewById(R.id.filterDeactivate);
+            Toast.makeText(getContext(), "Aucun ATM trouvé correspondant à cette banque", Toast.LENGTH_SHORT).show();
+            Fragment fragment = new Search_fragment();
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        }
+
+    }
+
+    //listener du bouton "annuler filtre"
+    View.OnClickListener deactivateFilterBtnListener = new View.OnClickListener() {
         public void onClick(View v) {
-            isClicked=1;
+            BankList_fragment.fromListViewClicked=false;
+            Search_fragment.fromSearchExecuted=false;
+            Fragment fragment = new Map_fragment();
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
             Toast.makeText(getContext(), "Chargement en cours.\nVeuillez patienter quelques secondes", Toast.LENGTH_LONG).show();
             v.setVisibility(View.GONE);
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            /*if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     || ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 return;
-            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
+            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);*/
         }
     };
     }

@@ -23,6 +23,7 @@ public class Widget_Provider extends AppWidgetProvider {
                 Widget_Provider.class);
         int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
         for (int widgetId : allWidgetIds) {
+            //Bank.getNearestBankList(Map_fragment.bankList, Map_fragment.myLocation);
             String bank = "";
             if(Bank.banks2String.size()>0){
                     bank = Bank.banks2String.get(0);

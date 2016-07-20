@@ -129,9 +129,9 @@ public class Bank {
         ArrayList<String> lstString = new ArrayList<>();
 
         for(Bank bank : lst){
-            lstString.add(bank.getName()+" "+bank.getAddress()+" située à "
+            lstString.add(bank.getName()+" "+bank.getAddress()+"\nsituée à "
                     +String.format("%.1f", Bank.distance(latitude, longitude, bank.getLatitude(),
-                    bank.getLongitude()))+"m\n"+"Données GPS: "+bank.getLatitude()+"/"+bank.getLongitude());
+                    bank.getLongitude()))+"m\n"+"GPS: "+bank.getLatitude()+"/"+bank.getLongitude());
         }
 
         return lstString;
